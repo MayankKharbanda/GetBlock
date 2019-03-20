@@ -1,3 +1,11 @@
+
+
+'''
+the buffer cache class
+
+'''
+
+
 import buffer_header
 import hash_queue
 import free_queue
@@ -27,7 +35,7 @@ class Buffer_Cache:
     
     
     
-    def get_block(self, block_num):
+    def assign_block(self, block_num):
         
         hash_block = self.hash_queue_headers[block_num % 64].head
         
