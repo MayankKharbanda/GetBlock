@@ -10,23 +10,23 @@ get the desired effect.
 &nbsp;&nbsp;&nbsp;
 Stores the specification details set by the superuser.
 
-+ **BufferHeader**  
++ **buffer_header**  
 &nbsp;&nbsp;&nbsp;
 Implements the structure of a buffer(including buffer header).
 
-+ **HashQueue**  
++ **hash_queue**  
 &nbsp;&nbsp;&nbsp;
 Implements the Hash Queue frame.
 
-+ **FreeQueue**  
++ **free_queue**  
 &nbsp;&nbsp;&nbsp;
 Implements the Free Queue frame.
 
-+ **BufferCache**  
++ **buffer_cache**  
 &nbsp;&nbsp;&nbsp;
 Implements the buffer cache(including the free list header)
 
-+ **getBlock**  
++ **get_block**  
 &nbsp;&nbsp;&nbsp;
 Implements the function to allocate a buffer for a disk block
 
@@ -55,19 +55,19 @@ of the existing *buffer* library in python we had to name it
 
 | Variable | Type | Definition |
 | :---: | :---: | --- | 
-| blockNumber   | Number       |Block Number whose data is in the buffer.|
-| processId     | Number       |Process ID of the process using the buffer|
-| status        | String       |Status of the buffer which is a combination of the various status states defined below|
-| data          | String       |Data of the Block stored in the buffer|
-| nextHashQueue | BufferHeader |Next buffer in the Hash Queue|
-| prevHashQueue | BufferHeader |Previous buffer in the Hash Queue|
-| nextFreeList  | BufferHeader |Next buffer in the Free List| 
-| prevFreeList  | BufferHeader |Previous buffer in the Free List|
+| block_number    | Number       |Block Number whose data is in the buffer.|
+| process_id      | Number       |Process ID of the process using the buffer|
+| status          | String       |Status of the buffer which is a combination of the various status states defined below|
+| data            | String       |Data of the Block stored in the buffer|
+| next_hash_queue | BufferHeader |Next buffer in the Hash Queue|
+| prev_hash_queue | BufferHeader |Previous buffer in the Hash Queue|
+| next_free_list  | BufferHeader |Next buffer in the Free List| 
+| prev_free_list  | BufferHeader |Previous buffer in the Free List|
 
 | Method | Definition |
 | :---: | --- |
-|getStatus|Returns the status of the buffer|
-|setStatus|Sets the status of the buffer(keeping in mind that buffer status is a combination of the status states)|
+|get_status|Returns the status of the buffer|
+|set_status|Sets the status of the buffer(keeping in mind that buffer status is a combination of the status states)|
   
 &nbsp;&nbsp;
 <hr>
@@ -130,8 +130,8 @@ These status states are defined in the Config file.
 
 | Variable | Type | Definition |
 | :---: | :---: | --- | 
-| freeList | FreeQueue | Free List(initially containing all the buffers)|
-| hashQueueHeaders | List of HashQueue | Hash Queues (all of them initially empty)|
+| free_list | FreeQueue | Free List(initially containing all the buffers)|
+| hash_queue_headers | List of HashQueue | Hash Queues (all of them initially empty)|
 
 | Method | Definition |
 | :---: | --- |

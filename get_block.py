@@ -1,6 +1,6 @@
 from config import Config
 
-def get_block(bufCache, blockNum):
+def get_block(buf_cache, block_num):
     '''
     Returns a Buffer
 
@@ -16,10 +16,10 @@ def get_block(bufCache, blockNum):
     while(True):      
        
         # Block found in Buffer Cache
-        if bufCache.in_hash_queue(blockNum):          
+        if buf_cache.in_hash_queue(block_num):          
             
             #assign pointer of the buffer
-            block = bufCache.assign_block(blockNum)
+            block = buf_cache.assign_block(block_num)
             
             #scenario 5
             if BUFFER_STATUS['BUSY'] in block.get_status():
@@ -28,29 +28,29 @@ def get_block(bufCache, blockNum):
             
             #scenario 1
             block.set_status("busy")
-            bufCache.freeList.remove(block)
+            buf_cache.free_list.remove(block)
             return block
    
         # Block NOT found in buffer Cache
         else:
             
             #scenario 4
-            if bufCache.freeList.is_empty():
+            if buf_cache.free_list.is_empty():
                 #TODO sleep function on event - ANY buffer becomes free
                 continue
-            
-            freeBlock = bufCache.freeList.remove_from_head()     #pointer to the free block
+           
+            free_block = buf_cache.free_list.remove_from_head()     #pointer to the free block
             
             #scenario 3
-            if(freeBlock.get_status == "delayed write"):
+            if(free_block.get_status == "delayed write"):
                 #TODO handle asnchronous write
                 continue
             
             #scenario 2
-            if(freeBlock.blockNumber is not None):                 #if the buffer in free list was not present in any of the buffer list
-                bufCache.hash_queue_headers[freeBlock.blockNumber % Config.data("MAX_QUEUES")].remove(freeBlock)
+            if(free_block.block_number is not None):                 #if the buffer in free list was not present in any of the buffer list
+                buf_cache.hash_queue_headers[free_block.block_number % Config.data("MAX_QUEUES")].remove(free_block)
                 
-            freeBlock.blockNumber = blockNum
-            bufCache.hash_queue_headers[freeBlock.blockNumber % Config.data("MAX_QUEUES")].add(freeBlock)       
+            free_block.block_number = block_num
+            buf_cache.hash_queue_headers[free_block.block_number % Config.data("MAX_QUEUES")].add(free_block)       
         
-            return freeBlock
+            return free_block
