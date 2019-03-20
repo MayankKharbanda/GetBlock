@@ -1,3 +1,11 @@
+
+
+'''
+the buffer cache class
+
+'''
+
+
 import buffer_header
 import hash_queue
 import free_queue
