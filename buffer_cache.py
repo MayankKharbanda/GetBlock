@@ -28,19 +28,13 @@ class Buffer_Cache:
         '''
         
         
-        #TODO buffer array deletion
-        self.buffers = []                       #buffer array
         self.free_list = free_queue.Free_Queue()    #free list
 
-
-        
         
         for x in range(2048):                   #number of buffers in the buffer cache --upto range
-            self.buffers.append(buffer_header.Buffer_Header())      
-            self.free_list.add_to_tail(self.buffers[x])         #adding all the buffers to the end of free list in starting
+            self.free_list.add_to_tail(buffer_header.Buffer_Header())         #adding all the buffers to the end of free list during initialization
     
     
-        
         self.hash_queue_headers = []            #array of hash queue headers
         
         for x in range(64):                     #number of hash-queues --upto range
