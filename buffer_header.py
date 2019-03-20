@@ -1,4 +1,6 @@
-
+'''
+buffer header of a buffer
+'''
 
 class Buffer_Header:
     

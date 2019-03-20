@@ -1,11 +1,15 @@
-
+'''
+free queue class
+'''
 
 class Free_Queue():
  
     
     
     def __init__(self, head=None, tail=None):
-        
+        '''
+        initialize empty list
+        '''
         self.head = head
         self.tail = tail
  
@@ -18,6 +22,7 @@ class Free_Queue():
         
         if self.head is None:
             self.head = self.tail = new_node
+        
         else:
             new_node.prev_flist = self.tail
             new_node.next_flist = None
@@ -36,6 +41,7 @@ class Free_Queue():
         
         if self.head is None:
             self.head = self.tail = new_node
+        
         else:
             new_node.next_flist = self.head
             new_node.prev_flist = None
@@ -47,26 +53,45 @@ class Free_Queue():
     
     def remove(self, current_node):
         
+        '''
+            removing buffer from free list
+        '''
+        
+        #updating head/tail if needed
         if self.head == current_node:
             self.head = current_node.next_flist
         if self.tail == current_node:
             self.tail = current_node.prev_flist
 
+
+        #updating the prev/next pointers after deletion
         if current_node.prev_flist:
             current_node.prev_flist.next_flist = current_node.next_flist
         if current_node.next_flist:
             current_node.next_flist.prev_flist = current_node.prev_flist
+        
+        #clearing the next and previous pointer of current node
+        current_node.prev_flist = None
+        current_node.next_flist = None
             
+    
     
     
     def remove_from_head(self):
         
+        '''
+            removing buffer from head (for delayed write)
+        '''
+        
         node = self.head
         self.head = self.head.next_flist
+        
+        node.next_flist = None
+        
         return node
         
      
-    
+    '''
     
     
     def show(self):
@@ -78,3 +103,4 @@ class Free_Queue():
         while current_node is not None:
             print(current_node.get_block_num())
             current_node = current_node.next_flist
+    '''
