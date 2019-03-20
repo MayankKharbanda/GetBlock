@@ -12,7 +12,7 @@ def get_block(self, block_num):
     
     if buf_cache.in_hash_queue(block_num):
         
-        block = buf_cache.get_block(block_num)
+        block = buf_cache.assign_block(block_num)
         if block.get_status == "busy":
             print("a")#continue
         
