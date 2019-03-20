@@ -6,7 +6,7 @@ get the desired effect.
 
 ## Modules
 
-+ **Implementation data**  
++ **Config**  
 &nbsp;&nbsp;&nbsp;
 Stores the specification details set by the superuser.
 
@@ -25,12 +25,12 @@ and various processes to service their needs.
 
 + **Process**  
 &nbsp;&nbsp;&nbsp;
-Implements a process that requests a disk block or a free buffer.
+Implements a process that requests a disk block.
 
 + **Runner**  
 &nbsp;&nbsp;&nbsp;
 Implements a runner process that spawns new processes and
-displays the data logs produced by the kernel and the processes.
+displays the data logs produced by the kernel and various processes.
 
 
 
