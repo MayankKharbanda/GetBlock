@@ -14,14 +14,14 @@ class Config:
         "BLOCK_SIZE": 1024,
         "MAX_BLOCKS": 100,
         "MAX_BUFFERS": 20,
-        "MAX_QUEUES": 4
+        "MAX_QUEUES": 4,
         "BUFFER_STATUS": {
-            'BUSY': 0,
-            'FREE': 1,
-            'VALID': 2,
-            'DELAYED_WRITE': 3,
-            'ACCESSING_DISK': 4,
-            'PROCESS_WAITING': 5
+            'BUSY': '0',
+            'FREE': '1',
+            'VALID': '2',
+            'DELAYED_WRITE': '3',
+            'ACCESSING_DISK': '4',
+            'PROCESS_WAITING': '5'
         }
     }
 
