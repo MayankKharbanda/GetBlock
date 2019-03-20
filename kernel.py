@@ -11,7 +11,7 @@ import time
 
 #TODO signal from process to main
 
-buf_cache = buffer_cache.Buffer_Cache()
+buf_cache = buffer_cache.BufferCache()
 
 def read(blocknum, timestamp):
     print("in read")

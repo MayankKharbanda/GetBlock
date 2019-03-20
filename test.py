@@ -3,12 +3,12 @@ import hash_queue
 import free_queue
 
 buffers = []
-free_list = free_queue.Free_Queue()
-hash_list1 = hash_queue.Hash_Queue()
+free_list = free_queue.FreeQueue()
+hash_list1 = hash_queue.HashQueue()
 
 
 for x in range(10):
-    buffers.append(buffer_header.Buffer_Header(x))
+    buffers.append(buffer_header.BufferHeader(x))
     free_list.add_to_tail(buffers[x])
 
 
