@@ -1,4 +1,4 @@
-class Buffer:
+class BufferHeader:
     
     def __init__(self,
                  blockNumber = None,
@@ -30,4 +30,10 @@ class Buffer:
                 f'and is assigned to {hasDiskBlock} disk block '
                 f'which is procured by {hasProcess} process.')
         
+    
+    def get_status(self):
+        return self.status
 
+
+    def set_status(self, status):
+        self.status += status
