@@ -20,8 +20,11 @@ class BufferHeader:
         self.prev_free_list = prev_free_list
 
     def __str__(self):
-        on_free_list = 'not on the free list' if self.next_free_list is \
-                        None else 'on the free list'
+        
+        if(self.next_free_list is None and self.prev_free_list is None):
+            on_free_list = 'not on the free list'
+        else:
+            on_free_list = 'on the free list'
         has_disk_block = 'no' if self.block_number is None else self.block_number
         has_process = 'no' if self.process_id is None else self.process_id
                     
