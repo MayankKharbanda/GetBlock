@@ -10,7 +10,8 @@ class BufferHeader:
                  next_hash_queue = None,
                  prev_hash_queue = None,
                  next_free_list = None,
-                 prev_free_list = None):
+                 prev_free_list = None,
+                 lock = None):
         
         self.block_number = block_number
         self.process_id = process_id
@@ -20,6 +21,7 @@ class BufferHeader:
         self.prev_hash_queue = prev_hash_queue
         self.next_free_list = next_free_list
         self.prev_free_list = prev_free_list
+        self.lock = lock
 
     def __str__(self):
         

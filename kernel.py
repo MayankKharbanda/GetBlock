@@ -17,9 +17,9 @@ release_queue = queue.Queue()
 def requests_manager():
     while True:
         req = request_queue.get()
-
         with buf_cache_lock:
-            block = get_block(buf_cache, req.block_number)
+            block = get_block(buf_cache, req.block_number, req.process_id)
+
         if block is None:
             # the buffer was busy or was marked delayed write
             request_queue.put(req)
@@ -37,18 +37,17 @@ def requests_manager():
                                       request_type='RELEASE', 
                                       block=block))
             print(block)
+
         request_queue.task_done()
 
 def release_manager():
     while True:
-        req = request_queue.get()
-        print(vars(req))
+        req = release_queue.get()
         time.sleep(2)
         print(f'Process {req.process_id} ',
               f'releasing block {req.block_number}')
-        with buf_cache_lock:
-            b_release(buf_cache, req.block)
-        request_queue.task_done()
+        b_release(buf_cache, req.block)
+        release_queue.task_done()
              
 
 requests_thread = threading.Thread(target=requests_manager)
@@ -86,4 +85,5 @@ for t in worker_threads:
     t.join()
 
 request_queue.join()
+release_queue.join()
 print('Finishing')

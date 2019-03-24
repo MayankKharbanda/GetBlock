@@ -1,3 +1,5 @@
+import threading
+
 import buffer_header
 import hash_queue
 import free_queue
@@ -14,7 +16,7 @@ class BufferCache:
         '''
         self.free_list = free_queue.FreeQueue()    
         for x in range(Config.data("MAX_BUFFERS")):                   
-            self.free_list.add_to_tail(buffer_header.BufferHeader())         
+            self.free_list.add_to_tail(buffer_header.BufferHeader(lock=threading.Lock()))         
         
         self.hash_queue_headers = []            
         for x in range(Config.data("MAX_QUEUES")):                     
