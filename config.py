@@ -12,9 +12,9 @@ class Config:
     __conf = {
         "BUFFER_SIZE": 1024,
         "BLOCK_SIZE": 1024,
-        "MAX_BLOCKS": 100,
-        "MAX_BUFFERS": 20,
-        "MAX_QUEUES": 4,
+        "MAX_BLOCKS": 2,
+        "MAX_BUFFERS": 2,
+        "MAX_QUEUES": 2,
         "BUFFER_STATUS": {
             'BUSY': '0',
             'FREE': '1',
@@ -22,7 +22,12 @@ class Config:
             'DELAYED_WRITE': '3',
             'ACCESSING_DISK': '4',
             'PROCESS_WAITING': '5'
-        }
+        },
+        "REQUEST_TYPE": [
+            "READ",
+            "WRITE",
+            "WRITE_DELAYED"
+        ]
     }
 
     @staticmethod

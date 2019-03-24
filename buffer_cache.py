@@ -27,11 +27,9 @@ class BufferCache:
         This function is called only and only if, 
         a particular buffer exists in the buffer list
         '''
-        
         #TODO correct name of hash_block
         
         hash_block = self.hash_queue_headers[block_num % Config.data("MAX_QUEUES")].head
-       
 
         while True:
             if hash_block.block_number == block_num:

@@ -1,9 +1,11 @@
+from config import Config
+
 class BufferHeader:
     
     def __init__(self,
                  block_number = None,
                  process_id = None,
-                 status = None,
+                 status = '',
                  data = None,
                  next_hash_queue = None,
                  prev_hash_queue = None,
@@ -39,4 +41,10 @@ class BufferHeader:
 
 
     def set_status(self, status):
-        self.status += status
+        BUFFER_STATUS = Config.data('BUFFER_STATUS')
+        self.status += BUFFER_STATUS[status]
+
+
+    def remove_status(self, status):
+        BUFFER_STATUS = Config.data('BUFFER_STATUS')
+        self.status = self.status.replace(BUFFER_STATUS[status], '')
