@@ -12,7 +12,6 @@ from config import Config
 ########## Daemon Threads ##########
 
 request_queue = queue.Queue()
-release_queue = queue.Queue()
 print_queue = queue.Queue()
 
 def requests_manager():
@@ -22,40 +21,29 @@ def requests_manager():
             block = get_block(buf_cache, req.block_number, req.process_id)
 
         if block is None:
-            # the buffer was busy or was marked delayed write
-            request_queue.put(req)
+            req.return_queue.put(None)
         else:
             print(f'Process {req.process_id} ',
                   f'acquired block {req.block_number} ',
                   f'for {req.request_type}')
 
             # if request was delayed write mark the status as such
-            '''if req.request_type is 'WRITE_DELAYED':
-                block.set_status('DELAYED_WRITE')'''
-
-            print_queue.put(block)
-            # put release request in the queue
-            release_queue.put(Request(process_id=req.process_id,
-                                      block_number=req.block_number,
-                                      request_type='RELEASE', 
-                                      block=block))
-            
             if req.request_type is 'WRITE_DELAYED':
                 block.set_status('DELAYED_WRITE')
+
+            print_queue.put(block)
+            
+            # put locked buffer in the queue
+            req.return_queue.put(block)
+            
+            #if req.request_type is 'WRITE_DELAYED':
+            #    block.set_status('DELAYED_WRITE')
 
             #print(block)
 
         request_queue.task_done()
 
-def release_manager():
-    while True:
-        req = release_queue.get()
-        time.sleep(2)
-        print(f'Process {req.process_id} ',
-              f'releasing block {req.block_number}')
-        b_release(buf_cache, req.block)
-        release_queue.task_done()
-             
+
 def print_manager():
     while True:
         data = print_queue.get()
@@ -68,11 +56,6 @@ requests_thread.daemon = True
 requests_thread.start()
 del requests_thread
 
-release_thread = threading.Thread(target=release_manager)
-release_thread.daemon = True
-release_thread.start()
-del release_thread
-
 print_thread = threading.Thread(target=print_manager)
 print_thread.daemon = True
 print_thread.start()
@@ -83,9 +66,21 @@ del print_thread
 def worker(process_id):
     random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
     request_type = random.choice(Config.data('REQUEST_TYPE'))
-    request_queue.put(Request(process_id=process_id,
-                              block_number=random_block,
-                              request_type=request_type))
+    return_queue = queue.Queue()
+    return_val = None
+    
+    while return_val is None:
+        request_queue.put(Request(process_id=process_id,
+                                  block_number=random_block,
+                                  request_type=request_type,
+                                  return_queue=return_queue))
+        return_val = return_queue.get()
+        return_queue.task_done()
+
+    time.sleep(2)
+    print(f'Process {process_id} ',
+          f'releasing block {return_val.block_number}')
+    b_release(buf_cache, return_val)
   
 
 ########## Cache Config ##########
@@ -103,6 +98,5 @@ for t in worker_threads:
     t.join()
 
 request_queue.join()
-release_queue.join()
 print_queue.join()
 print('Finishing')
