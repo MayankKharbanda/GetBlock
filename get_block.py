@@ -19,12 +19,12 @@ def get_block(buf_cache, block_num, process_id):
         block = buf_cache.assign_block(block_num)
         
         #scenario 5
-        block.lock.acquire()
+        #block.lock.acquire()
         if BUFFER_STATUS['BUSY'] in block.get_status():
             # try again by returning and notifying the calling body.
-            block.lock.release()
+            #block.lock.release()
             return None
-        block.lock.release()
+        #block.lock.release()
         #scenario 1
         block.lock.acquire()
         block.set_status('BUSY')
@@ -46,7 +46,7 @@ def get_block(buf_cache, block_num, process_id):
         if BUFFER_STATUS['DELAYED_WRITE'] in free_block.get_status():
             #TODO handle asnchronous write
             free_block.remove_status('DELAYED_WRITE')
-            free_block.remove_status('BUSY')
+            #free_block.remove_status('BUSY')
             buf_cache.free_list.add_to_head(free_block)
             return None
         
@@ -60,7 +60,8 @@ def get_block(buf_cache, block_num, process_id):
         hash_queue_no = int(free_block.block_number) % Config.data("MAX_QUEUES")
         buf_cache.hash_queue_headers[hash_queue_no].add(free_block)       
         
+        free_block.lock.acquire()
         free_block.set_status('BUSY') 
         free_block.process_id = process_id
-        free_block.lock.acquire()
+        
         return free_block
