@@ -24,7 +24,7 @@ def get_block(buf_cache, block_num, process_id):
             # try again by returning and notifying the calling body.
             block.lock.release()
             return None
-        
+        block.lock.release()
         #scenario 1
         block.lock.acquire()
         block.set_status('BUSY')
@@ -53,11 +53,11 @@ def get_block(buf_cache, block_num, process_id):
         #scenario 2                 
         if(free_block.block_number is not None):
             #initially no buffer is in the hash queue
-            hash_queue_no = free_block.block_number % Config.data("MAX_QUEUES")
+            hash_queue_no = int(free_block.block_number) % Config.data("MAX_QUEUES")
             buf_cache.hash_queue_headers[hash_queue_no].remove(free_block)
             
         free_block.block_number = block_num
-        hash_queue_no = free_block.block_number % Config.data("MAX_QUEUES")
+        hash_queue_no = int(free_block.block_number) % Config.data("MAX_QUEUES")
         buf_cache.hash_queue_headers[hash_queue_no].add(free_block)       
         
         free_block.set_status('BUSY') 

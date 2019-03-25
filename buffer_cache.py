@@ -31,7 +31,7 @@ class BufferCache:
         '''
         #TODO correct name of hash_block
         
-        hash_block = self.hash_queue_headers[block_num % Config.data("MAX_QUEUES")].head
+        hash_block = self.hash_queue_headers[int(block_num) % Config.data("MAX_QUEUES")].head
 
         while True:
             if hash_block.block_number == block_num:
@@ -44,7 +44,7 @@ class BufferCache:
         It checks if the block is in hash queue or not
         '''
         
-        hash_block = self.hash_queue_headers[block_num % Config.data("MAX_QUEUES")].head
+        hash_block = self.hash_queue_headers[int(block_num) % Config.data("MAX_QUEUES")].head
         
         while hash_block is not None:
             if hash_block.block_number == block_num:

@@ -63,9 +63,11 @@ class FreeQueue():
         Removing buffer from head (for delayed write)
         '''
         
-        node = self.head
-        node.next_free_list = None
-        return node
+        current_node = self.head
+        self.tail = None if self.tail == current_node else self.tail
+        self.head = current_node.next_free_list
+        current_node.next_free_list = None
+        return current_node
         
      
 '''

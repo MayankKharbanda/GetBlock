@@ -25,17 +25,23 @@ def requests_manager():
             request_queue.put(req)
         else:
             print(f'Process {req.process_id} ',
-                  f'acquired block {req.block_number}')
+                  f'acquired block {req.block_number} ',
+                  f'for {req.request_type}')
 
             # if request was delayed write mark the status as such
-            if req.request_type is 'WRITE_DELAYED':
-                block.set_status('DELAYED_WRITE')
+            '''if req.request_type is 'WRITE_DELAYED':
+                block.set_status('DELAYED_WRITE')'''
 
+            #print(block)
             # put release request in the queue
             release_queue.put(Request(process_id=req.process_id,
                                       block_number=req.block_number,
                                       request_type='RELEASE', 
                                       block=block))
+            
+            if req.request_type is 'WRITE_DELAYED':
+                block.set_status('DELAYED_WRITE')
+
             print(block)
 
         request_queue.task_done()

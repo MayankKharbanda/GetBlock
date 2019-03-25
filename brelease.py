@@ -6,6 +6,7 @@ def b_release(buf_cache, block):
     
     if BUFFER_STATUS['DELAYED_WRITE'] in block.get_status(): #and buffer.is_old()):
         buf_cache.free_list.add_to_head(block)
+        block.remove_status('DELAYED_WRITE')
     else:
         buf_cache.free_list.add_to_tail(block)
     
