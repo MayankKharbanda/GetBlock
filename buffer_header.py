@@ -28,10 +28,6 @@ class BufferHeader:
         if(self.next_free_list is None and self.prev_free_list is None):
             on_free_list = 'not on the free list'
         else:
-            if self.next_free_list:
-                print(self.next_free_list)
-            else:
-                print(self.prev_free_list)
             on_free_list = 'on the free list'
         has_disk_block = 'no' if self.block_number is None else self.block_number
         has_process = 'no' if self.process_id is None else self.process_id

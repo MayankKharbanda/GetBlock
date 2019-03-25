@@ -13,6 +13,7 @@ from config import Config
 
 request_queue = queue.Queue()
 release_queue = queue.Queue()
+print_queue = queue.Queue()
 
 def requests_manager():
     while True:
@@ -32,7 +33,7 @@ def requests_manager():
             '''if req.request_type is 'WRITE_DELAYED':
                 block.set_status('DELAYED_WRITE')'''
 
-            #print(block)
+            print_queue.put(block)
             # put release request in the queue
             release_queue.put(Request(process_id=req.process_id,
                                       block_number=req.block_number,
@@ -42,7 +43,7 @@ def requests_manager():
             if req.request_type is 'WRITE_DELAYED':
                 block.set_status('DELAYED_WRITE')
 
-            print(block)
+            #print(block)
 
         request_queue.task_done()
 
@@ -55,6 +56,12 @@ def release_manager():
         b_release(buf_cache, req.block)
         release_queue.task_done()
              
+def print_manager():
+    while True:
+        data = print_queue.get()
+        print(data)
+        print_queue.task_done()
+
 
 requests_thread = threading.Thread(target=requests_manager)
 requests_thread.daemon = True
@@ -65,6 +72,11 @@ release_thread = threading.Thread(target=release_manager)
 release_thread.daemon = True
 release_thread.start()
 del release_thread
+
+print_thread = threading.Thread(target=print_manager)
+print_thread.daemon = True
+print_thread.start()
+del print_thread
 
 ########## Processes ##########
 
@@ -92,4 +104,5 @@ for t in worker_threads:
 
 request_queue.join()
 release_queue.join()
+print_queue.join()
 print('Finishing')
