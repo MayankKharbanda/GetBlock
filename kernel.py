@@ -1,45 +1,108 @@
-'''
-dummy made haphazardly
-'''
-
-import buffer_cache
-import get_block
-#import threading
-#import subprocess
+import threading
 import time
+import queue
+import random
+
+from buffer_cache import BufferCache
+from get_block import get_block
+from brelease import b_release
+from request import Request
+from config import Config
+
+########## Daemon Threads ##########
+
+request_queue = queue.Queue()
+release_queue = queue.Queue()
+print_queue = queue.Queue()
+
+def requests_manager():
+    while True:
+        req = request_queue.get()
+        with buf_cache_lock:
+            block = get_block(buf_cache, req.block_number, req.process_id)
+
+        if block is None:
+            # the buffer was busy or was marked delayed write
+            request_queue.put(req)
+        else:
+            print(f'Process {req.process_id} ',
+                  f'acquired block {req.block_number} ',
+                  f'for {req.request_type}')
+
+            # if request was delayed write mark the status as such
+            '''if req.request_type is 'WRITE_DELAYED':
+                block.set_status('DELAYED_WRITE')'''
+
+            print_queue.put(block)
+            # put release request in the queue
+            release_queue.put(Request(process_id=req.process_id,
+                                      block_number=req.block_number,
+                                      request_type='RELEASE', 
+                                      block=block))
+            
+            if req.request_type is 'WRITE_DELAYED':
+                block.set_status('DELAYED_WRITE')
+
+            #print(block)
+
+        request_queue.task_done()
+
+def release_manager():
+    while True:
+        req = release_queue.get()
+        time.sleep(2)
+        print(f'Process {req.process_id} ',
+              f'releasing block {req.block_number}')
+        b_release(buf_cache, req.block)
+        release_queue.task_done()
+             
+def print_manager():
+    while True:
+        data = print_queue.get()
+        print(data)
+        print_queue.task_done()
 
 
-#TODO signal from process to main
+requests_thread = threading.Thread(target=requests_manager)
+requests_thread.daemon = True
+requests_thread.start()
+del requests_thread
 
-buf_cache = buffer_cache.BufferCache()
+release_thread = threading.Thread(target=release_manager)
+release_thread.daemon = True
+release_thread.start()
+del release_thread
 
-def read(blocknum, timestamp):
-    print("in read")
-    get_block.get_block(buf_cache, blocknum)
-    
-'''
-def write():
-    
-    for i in range(1,20):
-        subprocess.Popen("process"+i+".py", shell=True)
-'''
-'''
-def process_creater():
-    
-    for i in range(1,20):
-        subprocess.Popen("process"+i+".py", shell=True)
-'''
-#threading.Thread(target = process_creater).start()
+print_thread = threading.Thread(target=print_manager)
+print_thread.daemon = True
+print_thread.start()
+del print_thread
 
+########## Processes ##########
 
-def main():
-    print("in main1")
-    read(345,200)
-    print("in main")
-    time.sleep(0.02)
-    #kernel.write(145,100)
-    #time.sleep(0.01)
-    #kernel.read(1235,200)
-    #time.sleep(0.02)
-if __name__=="__main__":
-    main()
+def worker(process_id):
+    random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
+    request_type = random.choice(Config.data('REQUEST_TYPE'))
+    request_queue.put(Request(process_id=process_id,
+                              block_number=random_block,
+                              request_type=request_type))
+  
+
+########## Cache Config ##########
+
+buf_cache = BufferCache()
+buf_cache_lock = threading.Lock()
+print('Starting up!')
+
+worker_threads = []
+for i in range(5):
+    t = threading.Thread(target=worker, args=[i])
+    worker_threads.append(t)
+    t.start()
+for t in worker_threads:
+    t.join()
+
+request_queue.join()
+release_queue.join()
+print_queue.join()
+print('Finishing')

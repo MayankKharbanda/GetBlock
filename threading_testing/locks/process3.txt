@@ -1,0 +1,7 @@
+read 1 0.03
+write 3 0.10
+read 1 0.03
+write 3 0.10
+read 2 0.04
+read 1 0.03
+write 3 0.10
