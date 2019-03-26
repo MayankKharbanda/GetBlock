@@ -1,9 +1,9 @@
 class HashQueue():
     
     def __init__(self, head=None, tail=None):
-        '''
-        initialize empty list
-        ''' 
+        
+        #initialize empty list
+         
         self.head = head
         self.tail = tail
  
@@ -21,9 +21,8 @@ class HashQueue():
  
     
     def remove(self, current_node):
-        '''
-        Removing buffer from a particular buffer list
-        '''
+
+        #Removing buffer from a particular buffer list
         
         # updating head/tail if needed
         if self.head == current_node:
@@ -40,16 +39,3 @@ class HashQueue():
         # clearing the next and previous pointer of current node
         current_node.prev_hash_queue = None
         current_node.next_hash_queue = None
-
-        
-'''    
-    
-    def show(self):
-        
-        print("Show list data:")
-        
-        current_node = self.head
-        
-        while current_node is not None:
-            print(current_node.get_block_num())
-            current_node = current_node.next_hqueue'''
