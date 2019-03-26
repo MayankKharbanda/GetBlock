@@ -7,48 +7,93 @@ from buffer_cache import BufferCache
 from get_block import get_block
 from brelease import b_release
 from request import Request
+from request import Release_Request
 from config import Config
 
-########## Daemon Threads ##########
+
+############# Daemon Threads Definations##############
+
+
+'''
+request_queue - contains requests for getblock algorithm
+print_queue - contains print commands of details of the buffer
+release_queue - contains requests for brelease algorithm
+
+'''
+
 
 request_queue = queue.Queue()
 print_queue = queue.Queue()
+release_queue = queue.Queue()
+
+
 
 def requests_manager():
+    
+    #the function is used to handle getblock requests
+    
     while True:
+        
         req = request_queue.get()
+        
+        #locking buffer cache to run get block
         with buf_cache_lock:
             block = get_block(buf_cache, req.block_number, req.process_id)
 
-        if block is None:
+        if block is None:   #didn't recieved the buffer in first go
+            
             req.return_queue.put(None)
+        
         else:
+            
             print(f'Process {req.process_id} ',
                   f'acquired block {req.block_number} ',
                   f'for {req.request_type}')
 
-            # if request was delayed write mark the status as such
+            # if request was delayed write mark the status as data is valid 
+            #and buffer is not old at the moment
             if req.request_type is 'WRITE_DELAYED':
-                block.set_status('DELAYED_WRITE')
+                block.set_status('VALID')
+                block.set_status('NOT_OLD')
 
             print_queue.put(block)
             
-            # put locked buffer in the queue
+            # put locked buffer in the queue to be accessed by the process
             req.return_queue.put(block)
-            
-            #if req.request_type is 'WRITE_DELAYED':
-            #    block.set_status('DELAYED_WRITE')
+        
+        request_queue.task_done() #task for iteration is done -used while working with thread-queues
 
-            #print(block)
 
-        request_queue.task_done()
 
 
 def print_manager():
+    
+    #This function used to handle print requests of a buffer
+    
     while True:
         data = print_queue.get()
         print(data)
         print_queue.task_done()
+
+
+
+def release_manager():
+    
+    #This function is used to handle release requests of a buffer
+    
+    while True:
+        req = release_queue.get()
+        
+        with buf_cache_lock:    #locking the buffer cache
+            b_release(buf_cache, req.block)
+            
+            print(f'Process {req.process_id} ',
+                  f'releasing block {req.block.block_number}')
+        
+        release_queue.task_done()
+
+
+################Daemon Threads initialization######################
 
 
 requests_thread = threading.Thread(target=requests_manager)
@@ -56,47 +101,80 @@ requests_thread.daemon = True
 requests_thread.start()
 del requests_thread
 
+
+
 print_thread = threading.Thread(target=print_manager)
 print_thread.daemon = True
 print_thread.start()
 del print_thread
 
-########## Processes ##########
+
+
+release_thread = threading.Thread(target=release_manager)
+release_thread.daemon = True
+release_thread.start()
+del release_thread
+
+###################### Processes Threads #############################
 
 def worker(process_id):
+    
+    
+    #Requesting random block with access type of read, write and delayed write
     random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
     request_type = random.choice(Config.data('REQUEST_TYPE'))
-    return_queue = queue.Queue()
+    
+    
+    return_queue = queue.Queue()    #for exchange of block number from request_manager and the process
     return_val = None
     
-    while return_val is None:
+    
+    while return_val is None:       #until buffer is not found
         request_queue.put(Request(process_id=process_id,
                                   block_number=random_block,
                                   request_type=request_type,
                                   return_queue=return_queue))
+        
         return_val = return_queue.get()
         return_queue.task_done()
 
-    time.sleep(2)
-    print(f'Process {process_id} ',
-          f'releasing block {return_val.block_number}')
-    b_release(buf_cache, return_val)
+    
+    time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
+    
+    #requesting to release the buffer
+    release_queue.put(Release_Request(process_id=process_id,
+                                      block=return_val))
+    
+    
   
 
-########## Cache Config ##########
+######################## Cache Config ##########################
 
 buf_cache = BufferCache()
 buf_cache_lock = threading.Lock()
 print('Starting up!')
 
+
+#########################Process Threads Config##################
+
+Number_of_processes = 10
 worker_threads = []
-for i in range(5):
+
+
+for i in range(Number_of_processes):
     t = threading.Thread(target=worker, args=[i])
     worker_threads.append(t)
     t.start()
+
+########################Threads Termination######################
+        
+    
 for t in worker_threads:
     t.join()
 
 request_queue.join()
 print_queue.join()
+release_queue.join()
 print('Finishing')
+
+##################################################################
