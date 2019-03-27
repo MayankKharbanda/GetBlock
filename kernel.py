@@ -119,30 +119,31 @@ del release_thread
 
 def worker(process_id):
     
-    
-    #Requesting random block with access type of read, write and delayed write
-    random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
-    request_type = random.choice(Config.data('REQUEST_TYPE'))
-    
-    
-    return_queue = queue.Queue()    #for exchange of block number from request_manager and the process
-    return_val = None
+    random_requests = random.randint(1,10)
+    for ith_request in range(random_requests):
+        #Requesting random block with access type of read, write and delayed write
+        random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
+        request_type = random.choice(Config.data('REQUEST_TYPE'))
     
     
-    while return_val is None:       #until buffer is not found
-        request_queue.put(Request(process_id=process_id,
+        return_queue = queue.Queue()    #for exchange of block number from request_manager and the process
+        return_val = None
+    
+    
+        while return_val is None:       #until buffer is not found
+            request_queue.put(Request(process_id=process_id,
                                   block_number=random_block,
                                   request_type=request_type,
                                   return_queue=return_queue))
         
-        return_val = return_queue.get()
-        return_queue.task_done()
+            return_val = return_queue.get()
+            return_queue.task_done()
 
     
-    time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
+        time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
     
-    #requesting to release the buffer
-    release_queue.put(Release_Request(process_id=process_id,
+        #requesting to release the buffer
+        release_queue.put(Release_Request(process_id=process_id,
                                       block=return_val))
     
     
