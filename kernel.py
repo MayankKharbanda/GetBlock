@@ -10,6 +10,7 @@ from request import Request
 from request import Release_Request
 from config import Config
 
+BUFFER_STATUS = Config.data('BUFFER_STATUS')
 
 ############# Daemon Threads Definations##############
 
@@ -52,9 +53,12 @@ def requests_manager():
 
             # if request was delayed write mark the status as data is valid 
             #and buffer is not old at the moment
+            #checks are made if the buffer is already in the required hash queue
             if req.request_type is 'WRITE_DELAYED':
-                block.set_status('VALID')
-                block.set_status('NOT_OLD')
+                if BUFFER_STATUS['VALID'] not in block.get_status():
+                    block.set_status('VALID')
+                if BUFFER_STATUS['NOT_OLD'] not in block.get_status():
+                    block.set_status('NOT_OLD')
 
             print_queue.put(block)
             
@@ -124,8 +128,8 @@ def worker(process_id):
         #Requesting random block with access type of read, write and delayed write
         random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
         request_type = random.choice(Config.data('REQUEST_TYPE'))
-    
-    
+        
+        
         return_queue = queue.Queue()    #for exchange of block number from request_manager and the process
         return_val = None
     
@@ -142,7 +146,7 @@ def worker(process_id):
     
         time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
     
-        #requesting to release the buffer
+            #requesting to release the buffer
         release_queue.put(Release_Request(process_id=process_id,
                                       block=return_val))
     
@@ -158,11 +162,10 @@ print('Starting up!')
 
 #########################Process Threads Config##################
 
-Number_of_processes = 10
 worker_threads = []
 
 
-for i in range(Number_of_processes):
+for i in range(Config.data("NUMBER_OF_PROCESSES")):
     t = threading.Thread(target=worker, args=[i])
     worker_threads.append(t)
     t.start()

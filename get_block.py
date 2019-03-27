@@ -1,5 +1,8 @@
 from config import Config
 
+from async_write import delayed_write
+import asyncio
+
 def get_block(buf_cache, block_num, process_id):
     
     
@@ -42,6 +45,7 @@ def get_block(buf_cache, block_num, process_id):
     else:
         
         
+        
         #scenario 4
         if buf_cache.free_list.is_empty():
             # try again by returning and notifying the calling body
@@ -55,9 +59,16 @@ def get_block(buf_cache, block_num, process_id):
         if BUFFER_STATUS['VALID'] in free_block.get_status() and BUFFER_STATUS['NOT_OLD'] in free_block.get_status():
             
             #buffer with delayed write is found
+            
+            free_block.lock.acquire()
             free_block.remove_status('NOT_OLD')
             free_block.set_status('OLD')
-            buf_cache.free_list.add_to_head(free_block)
+            free_block.set_status('BUSY')
+            
+            #asynchronous write to memory
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(delayed_write(buf_cache, free_block))
             
             return None
         
