@@ -36,15 +36,22 @@ def requests_manager():
     while True:
         
         req = request_queue.get()
-        
+        delayed_write = False
         #locking buffer cache to run get block
         with buf_cache_lock:
-            block = get_block(buf_cache, req.block_number, req.process_id)
+            block, delayed_write = get_block(buf_cache, req.block_number, req.process_id)
 
-        if block is None:   #didn't recieved the buffer in first go
+        if delayed_write is True:
+            #sleep for asynchronous write to disk   
+            delay_thread = threading.Thread(target=delay_func, args = (block,))
+            delay_thread.start()
+            req.return_queue.put(None)
+            
+        elif block is None:   #didn't recieved the buffer in first go
             
             req.return_queue.put(None)
         
+            
         else:
             
             print(f'Process {req.process_id} ',
@@ -67,6 +74,15 @@ def requests_manager():
         
         request_queue.task_done() #task for iteration is done -used while working with thread-queues
 
+
+
+def delay_func(block1):
+    
+    time_to_sleep = random.randint(1,3)
+    time.sleep(time_to_sleep)
+    
+    release_queue.put(Release_Request(process_id="Kernel",
+                                      block=block1))
 
 
 
