@@ -1,7 +1,8 @@
 from config import Config
+import threading
 
 from async_write import delayed_write
-import asyncio
+
 
 def get_block(buf_cache, block_num, process_id):
     
@@ -65,10 +66,11 @@ def get_block(buf_cache, block_num, process_id):
             free_block.set_status('OLD')
             free_block.set_status('BUSY')
             
+            
             #asynchronous write to memory
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(delayed_write(buf_cache, free_block))
+            
+            th = threading.Thread(target = delayed_write, args = (buf_cache, free_block))
+            th.start()
             
             return None
         

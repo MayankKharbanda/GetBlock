@@ -1,15 +1,17 @@
 import random
 import time
+from brelease import b_release
+import threading
 
 
-async def delayed_write(buffer_cache, buffer):
+def delayed_write(buffer_cache, buffer):
     
+    buf_cache_lock = threading.Lock()
     #sleep for asynchronous write to disk
+    
     time_to_sleep = random.randint(1,3)
     time.sleep(time_to_sleep)
     
-    #adding to free list after writing to the disk
-    buffer_cache.free_list.add_to_head(buffer)
-    buffer.remove_status('BUSY')
-    
-    buffer.lock.release()
+    #releasing buffer after writing to the disk
+    with buf_cache_lock:
+        b_release(buffer_cache, buffer)

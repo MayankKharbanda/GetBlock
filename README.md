@@ -35,15 +35,15 @@ Implements the function to allocate a buffer for a disk block.
 Implements the kernel that interacts with the buffer cache
 and various processes to service their needs.
 
-+ **async_write**
++ **async_write**  
 &nbsp;&nbsp;&nbsp;
 Implements the function to handle asynchronous write to the disk. 
 
-+ **brelease**
++ **brelease**  
 &nbsp;&nbsp;&nbsp;
 Implements the function to de-allocate a disk block from a buffer.
 
-+ **request**
++ **request**  
 &nbsp;&nbsp;&nbsp;
 Contains the classes to handle threading queues.
 
