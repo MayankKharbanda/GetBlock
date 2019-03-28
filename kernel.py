@@ -7,7 +7,7 @@ from buffer_cache import BufferCache
 from get_block import get_block
 from brelease import b_release
 from request import Request
-from request import Release_Request
+from request import ReleaseRequest
 from config import Config
 
 BUFFER_STATUS = Config.data('BUFFER_STATUS')
@@ -54,9 +54,10 @@ def requests_manager():
             
         else:
             
-            print(f'Process {req.process_id} ',
-                  f'acquired block {req.block_number} ',
+            s =  (f'Process {req.process_id} '
+                  f'acquired block {req.block_number} '
                   f'for {req.request_type}')
+            print_queue.put(s)
 
             # if request was delayed write mark the status as data is valid 
             #and buffer is not old at the moment
@@ -81,7 +82,7 @@ def delay_func(block1):
     time_to_sleep = random.randint(1,3)
     time.sleep(time_to_sleep)
     
-    release_queue.put(Release_Request(process_id="Kernel",
+    release_queue.put(ReleaseRequest(process_id="Kernel",
                                       block=block1))
 
 
@@ -107,8 +108,9 @@ def release_manager():
         with buf_cache_lock:    #locking the buffer cache
             b_release(buf_cache, req.block)
             
-            print(f'Process {req.process_id} ',
-                  f'releasing block {req.block.block_number}')
+            s = (f'Process {req.process_id} '
+                 f'releasing block {req.block.block_number}')
+            print_queue.put(s)
         
         release_queue.task_done()
 
@@ -163,7 +165,7 @@ def worker(process_id):
         time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
     
             #requesting to release the buffer
-        release_queue.put(Release_Request(process_id=process_id,
+        release_queue.put(ReleaseRequest(process_id=process_id,
                                       block=return_val))
     
     
@@ -173,7 +175,7 @@ def worker(process_id):
 
 buf_cache = BufferCache()
 buf_cache_lock = threading.Lock()
-print('Starting up!')
+print_queue.put('Starting up!')
 
 
 #########################Process Threads Config##################
@@ -195,6 +197,6 @@ for t in worker_threads:
 request_queue.join()
 print_queue.join()
 release_queue.join()
-print('Finishing')
+print_queue.put('Finishing')
 
 ##################################################################
