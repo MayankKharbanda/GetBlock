@@ -15,3 +15,5 @@ def delayed_write(buffer_cache, buffer):
     #releasing buffer after writing to the disk
     with buf_cache_lock:
         b_release(buffer_cache, buffer)
+        print(f'Kernel ',
+              f'releasing block {buffer.block_number}')

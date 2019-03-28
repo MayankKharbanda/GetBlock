@@ -30,22 +30,23 @@ Implements the buffer cache(including the free list header).
 &nbsp;&nbsp;&nbsp;
 Implements the function to allocate a buffer for a disk block.
 
-+ **Kernel**  
++ **brelease**  
 &nbsp;&nbsp;&nbsp;
-Implements the kernel that interacts with the buffer cache
-and various processes to service their needs.
+Implements the function to de-allocate a disk block from a buffer.
 
 + **async_write**  
 &nbsp;&nbsp;&nbsp;
 Implements the function to handle asynchronous write to the disk. 
 
-+ **brelease**  
-&nbsp;&nbsp;&nbsp;
-Implements the function to de-allocate a disk block from a buffer.
-
 + **request**  
 &nbsp;&nbsp;&nbsp;
 Contains the classes to handle threading queues.
+
++ **Kernel**  
+&nbsp;&nbsp;&nbsp;
+Implements the kernel that interacts with the buffer cache
+and various processes to service their needs.
+
 
 ## Module details
 
@@ -157,4 +158,11 @@ This function implements the system call *getblk*
 <hr>
 &nbsp;&nbsp;
 
+### get_block
+
+This function implements the system call *getblk*
+
+&nbsp;&nbsp;
+<hr>
+&nbsp;&nbsp;
 
