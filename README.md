@@ -24,25 +24,28 @@ Implements the Free Queue frame.
 
 + **buffer_cache**  
 &nbsp;&nbsp;&nbsp;
-Implements the buffer cache(including the free list header)
+Implements the buffer cache(including the free list header).
 
 + **get_block**  
 &nbsp;&nbsp;&nbsp;
-Implements the function to allocate a buffer for a disk block
+Implements the function to allocate a buffer for a disk block.
+
++ **brelease**  
+&nbsp;&nbsp;&nbsp;
+Implements the function to de-allocate a disk block from a buffer.
+
++ **async_write**  
+&nbsp;&nbsp;&nbsp;
+Implements the function to handle asynchronous write to the disk. 
+
++ **request**  
+&nbsp;&nbsp;&nbsp;
+Contains the classes to handle threading queues.
 
 + **Kernel**  
 &nbsp;&nbsp;&nbsp;
 Implements the kernel that interacts with the buffer cache
 and various processes to service their needs.
-
-+ **Process**  
-&nbsp;&nbsp;&nbsp;
-Implements a process that requests a disk block.
-
-+ **Runner**  
-&nbsp;&nbsp;&nbsp;
-Implements a runner process that spawns new processes and
-displays the data logs produced by the kernel and various processes.
 
 
 ## Module details
@@ -55,19 +58,21 @@ of the existing *buffer* library in python we had to name it
 
 | Variable | Type | Definition |
 | :---: | :---: | --- | 
-| block_number    | Number       |Block Number whose data is in the buffer.|
-| process_id      | Number       |Process ID of the process using the buffer|
-| status          | String       |Status of the buffer which is a combination of the various status states defined below|
-| data            | String       |Data of the Block stored in the buffer|
-| next_hash_queue | BufferHeader |Next buffer in the Hash Queue|
-| prev_hash_queue | BufferHeader |Previous buffer in the Hash Queue|
-| next_free_list  | BufferHeader |Next buffer in the Free List| 
-| prev_free_list  | BufferHeader |Previous buffer in the Free List|
+| block_number    | Number         |Block Number whose data is in the buffer|
+| process_id      | Number         |Process ID of the process using the buffer|
+| status          | String         |Status of the buffer which is a combination of the various status states defined below|
+| data            | String         |Data of the Block stored in the buffer|
+| next_hash_queue | BufferHeader   |Next buffer in the Hash Queue|
+| prev_hash_queue | BufferHeader   |Previous buffer in the Hash Queue|
+| next_free_list  | BufferHeader   |Next buffer in the Free List| 
+| prev_free_list  | BufferHeader   |Previous buffer in the Free List|
+| lock            | Threading Lock |Lock the buffer|
 
 | Method | Definition |
 | :---: | --- |
-|get_status|Returns the status of the buffer|
-|set_status|Sets the status of the buffer(keeping in mind that buffer status is a combination of the status states)|
+|get_status   |Returns the status of the buffer|
+|set_status   |Sets the status of the buffer(keeping in mind that buffer status is a combination of the status states)|
+|remove_status|Removes the status of the buffer|
   
 &nbsp;&nbsp;
 <hr>
@@ -85,6 +90,8 @@ These status states are defined in the Config file.
 |3|Buffer has been marked delayed write|
 |4|Some Process is reading or writing data from or to the disk|
 |5|Some Process is waiting for the buffer to become free|
+|6|Buffer is Old (already in free list)|
+|7|Buffer is not Old (just entered in free list)|
 
 &nbsp;&nbsp;
 <hr>
@@ -121,6 +128,7 @@ These status states are defined in the Config file.
 | add_to_head | add the buffer to the head of the free queue|
 | is_empty | returns true if free list is empty|
 | remove | remove the buffer from the free queue|
+| remove_from_head | remove the buffer from the head of free queue|
 
 &nbsp;&nbsp;
 <hr>
@@ -150,4 +158,11 @@ This function implements the system call *getblk*
 <hr>
 &nbsp;&nbsp;
 
+### get_block
+
+This function implements the system call *getblk*
+
+&nbsp;&nbsp;
+<hr>
+&nbsp;&nbsp;
 
