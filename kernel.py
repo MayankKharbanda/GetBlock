@@ -69,7 +69,8 @@ def requests_manager():
                     block.set_status('NOT_OLD')
 
             print_queue.put(block)
-            
+            print_queue.put(buf_cache.show())
+
             # put locked buffer in the queue to be accessed by the process
             req.return_queue.put(block)
         
@@ -107,10 +108,12 @@ def release_manager():
         
         with buf_cache_lock:    #locking the buffer cache
             b_release(buf_cache, req.block)
-            
+             
             s = (f'Process {req.process_id} '
                  f'releasing block {req.block.block_number}')
             print_queue.put(s)
+
+            print_queue.put(buf_cache.show())
         
         release_queue.task_done()
 

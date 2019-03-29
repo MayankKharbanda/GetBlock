@@ -39,3 +39,15 @@ class HashQueue():
         # clearing the next and previous pointer of current node
         current_node.prev_hash_queue = None
         current_node.next_hash_queue = None
+
+    def show(self):
+        
+        current_node = self.head
+        print_string = ' | '
+
+        while current_node is not None:
+            s = (f'bno:{current_node.block_number} '
+                 f'pid:{current_node.process_id}')
+            print_string += s + ' | '
+            current_node = current_node.next_hash_queue
+        return print_string

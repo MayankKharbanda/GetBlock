@@ -73,4 +73,12 @@ class FreeQueue():
         current_node.next_free_list = None
         return current_node
         
-    
+    def show(self):
+        
+        current_node = self.head
+        print_string = ' | ' 
+        while current_node is not None:
+            print_string += 'bno:' + str(current_node.block_number or -1)
+            print_string += ' | '
+            current_node = current_node.next_free_list
+        return print_string
