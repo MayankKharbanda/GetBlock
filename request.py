@@ -14,7 +14,7 @@ class Request:
         self.return_queue = return_queue
 
 
-class Release_Request:
+class ReleaseRequest:
 
     #This class is used to create objects for buffer release requests
     

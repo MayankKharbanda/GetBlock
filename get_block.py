@@ -1,5 +1,7 @@
 from config import Config
 
+
+
 def get_block(buf_cache, block_num, process_id):
     
     
@@ -12,6 +14,7 @@ def get_block(buf_cache, block_num, process_id):
         pointer to the block in the buffer
     '''
 
+    delayed_write = False
     
     BUFFER_STATUS = Config.data("BUFFER_STATUS")
 
@@ -26,7 +29,7 @@ def get_block(buf_cache, block_num, process_id):
         #scenario 5
         if BUFFER_STATUS['BUSY'] in block.get_status():
             # try again by returning and notifying the calling body.
-            return None
+            return None, delayed_write
         
         
         #scenario 1
@@ -34,7 +37,7 @@ def get_block(buf_cache, block_num, process_id):
         block.set_status('BUSY')
         block.process_id = process_id
         buf_cache.free_list.remove(block)
-        return block
+        return block, delayed_write
 
     
     
@@ -42,10 +45,11 @@ def get_block(buf_cache, block_num, process_id):
     else:
         
         
+        
         #scenario 4
         if buf_cache.free_list.is_empty():
             # try again by returning and notifying the calling body
-            return None
+            return None, delayed_write
        
         
         free_block = buf_cache.free_list.remove_from_head()     #pointer to the free block
@@ -55,11 +59,17 @@ def get_block(buf_cache, block_num, process_id):
         if BUFFER_STATUS['VALID'] in free_block.get_status() and BUFFER_STATUS['NOT_OLD'] in free_block.get_status():
             
             #buffer with delayed write is found
+            
+            free_block.lock.acquire()
             free_block.remove_status('NOT_OLD')
             free_block.set_status('OLD')
-            buf_cache.free_list.add_to_head(free_block)
+            free_block.set_status('BUSY')
             
-            return None
+            
+            #asynchronous write to memory
+            delayed_write = True
+            
+            return free_block, delayed_write
         
         
         #scenario 2                 
@@ -79,4 +89,4 @@ def get_block(buf_cache, block_num, process_id):
         free_block.set_status('BUSY') 
         free_block.process_id = process_id
         
-        return free_block
+        return free_block, delayed_write
