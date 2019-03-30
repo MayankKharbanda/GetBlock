@@ -179,7 +179,7 @@ def worker(process_id):
 buf_cache = BufferCache()
 buf_cache_lock = threading.Lock()
 print_queue.put('Starting up!')
-
+print_queue.put(buf_cache.show())
 
 #########################Process Threads Config##################
 

@@ -18,6 +18,7 @@ def b_release(buf_cache, block):
         
         buf_cache.free_list.add_to_tail(block)
     
+    block.process_id = -1
     block.remove_status('BUSY')
     block.lock.release()
     
