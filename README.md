@@ -19,6 +19,8 @@ get the desired effect.
 not executable run `chmod +x gb_run`, and then run `./gb_run`
 + After a while a browser window will pop-up, if the window
 doesn't show anything then try refreshing the page.
++ If you wish to see the **detailed log file**, then open
+`./GUI/public/log`.
 
 ## Data flow
 
