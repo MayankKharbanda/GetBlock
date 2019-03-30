@@ -12,10 +12,10 @@ class Config:
     __conf = {
         "BUFFER_SIZE": 1024,
         "BLOCK_SIZE": 1024,
-        "MAX_BLOCKS": 5,
-        "MAX_BUFFERS": 2,
+        "MAX_BLOCKS": 10,
+        "MAX_BUFFERS": 4,
         "MAX_QUEUES": 2,
-        "NUMBER_OF_PROCESSES": 4,
+        "NUMBER_OF_PROCESSES": 5,
         "BUFFER_STATUS": {
             'BUSY': '0',
             'FREE': '1',

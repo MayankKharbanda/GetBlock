@@ -1,0 +1,18 @@
+#!/bin/bash
+
+URL='http://localhost:3000'
+
+echo 'Running...'
+
+python3 kernel.py > './GUI/public/log'
+cd ./GUI
+
+if which xdg-open > /dev/null
+then
+    xdg-open $URL
+else
+    python3 -mwebbrowser $URL
+fi
+
+npm install
+npm start

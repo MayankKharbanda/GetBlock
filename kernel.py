@@ -147,7 +147,7 @@ del release_thread
 
 def worker(process_id):
     
-    random_requests = random.randint(1,10)
+    random_requests = random.randint(1,4)
     for ith_request in range(random_requests):
         #Requesting random block with access type of read, write and delayed write
         random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)

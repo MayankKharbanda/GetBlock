@@ -1,0 +1,313 @@
+Starting up!
+--------Free List--------
+ | bno:-1 | bno:-1 | bno:-1 | bno:-1 | 
+--------Buffer List 0--------
+ | 
+--------Buffer List 1--------
+ | 
+
+Process 0 acquired block 1 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 1 disk block which is procured by 0 process.
+--------Free List--------
+ | bno:-1 | bno:-1 | bno:-1 | 
+--------Buffer List 0--------
+ | 
+--------Buffer List 1--------
+ | bno:1 pid:0 | 
+
+Process 2 acquired block 6 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 6 disk block which is procured by 2 process.
+--------Free List--------
+ | bno:-1 | bno:-1 | 
+--------Buffer List 0--------
+ | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:1 pid:0 | 
+
+Process 2 releasing block 6
+--------Free List--------
+ | bno:-1 | bno:-1 | bno:6 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | 
+--------Buffer List 1--------
+ | bno:1 pid:0 | 
+
+Process 3 acquired block 8 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 8 disk block which is procured by 3 process.
+--------Free List--------
+ | bno:-1 | bno:6 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:3 | 
+--------Buffer List 1--------
+ | bno:1 pid:0 | 
+
+Process 4 acquired block 2 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 2 disk block which is procured by 4 process.
+--------Free List--------
+ | bno:6 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:3 | bno:2 pid:4 | 
+--------Buffer List 1--------
+ | bno:1 pid:0 | 
+
+Process 0 releasing block 1
+--------Free List--------
+ | bno:1 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:3 | bno:2 pid:4 | 
+--------Buffer List 1--------
+ | bno:1 pid:-1 | 
+
+Process 4 releasing block 2
+--------Free List--------
+ | bno:1 | bno:2 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:3 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:1 pid:-1 | 
+
+Process 4 acquired block 7 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 7 disk block which is procured by 4 process.
+--------Free List--------
+ | bno:2 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:3 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | 
+
+Process 3 releasing block 8
+--------Free List--------
+ | bno:8 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:-1 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | 
+
+Process Kernel releasing block 6
+--------Free List--------
+ | bno:6 | 
+--------Buffer List 0--------
+ | bno:6 pid:-1 | bno:8 pid:-1 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | 
+
+Process 2 acquired block 1 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 1 disk block which is procured by 2 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:8 pid:-1 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | 
+
+Process Kernel releasing block 2
+--------Free List--------
+ | bno:2 | 
+--------Buffer List 0--------
+ | bno:8 pid:-1 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | 
+
+Process Kernel releasing block 8
+--------Free List--------
+ | bno:8 | bno:2 | 
+--------Buffer List 0--------
+ | bno:8 pid:-1 | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | 
+
+Process 0 acquired block 9 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 9 disk block which is procured by 0 process.
+--------Free List--------
+ | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | bno:9 pid:0 | 
+
+Process 3 acquired block 2 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 2 disk block which is procured by 3 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | bno:9 pid:0 | 
+
+Process 0 releasing block 9
+--------Free List--------
+ | bno:9 | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:2 | bno:9 pid:-1 | 
+
+Process 2 releasing block 1
+--------Free List--------
+ | bno:9 | bno:1 | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:-1 | bno:9 pid:-1 | 
+
+Process 2 acquired block 6 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 6 disk block which is procured by 2 process.
+--------Free List--------
+ | bno:1 | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:-1 | 
+
+Process 1 acquired block 1 for WRITE
+This Buffer has the status as 0. It is not on the free list and is assigned to 1 disk block which is procured by 1 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:1 | 
+
+Process 4 releasing block 7
+--------Free List--------
+ | bno:7 | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 4 acquired block 7 for READ
+This Buffer has the status as 0. It is not on the free list and is assigned to 7 disk block which is procured by 4 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:4 | bno:1 pid:1 | 
+
+Process 4 releasing block 7
+--------Free List--------
+ | bno:7 | 
+--------Buffer List 0--------
+ | bno:2 pid:3 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 3 releasing block 2
+--------Free List--------
+ | bno:7 | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 3 acquired block 7 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 7 disk block which is procured by 3 process.
+--------Free List--------
+ | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:3 | bno:1 pid:1 | 
+
+Process 4 acquired block 2 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 2 disk block which is procured by 4 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:2 pid:4 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:3 | bno:1 pid:1 | 
+
+Process 3 releasing block 7
+--------Free List--------
+ | bno:7 | 
+--------Buffer List 0--------
+ | bno:2 pid:4 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 4 releasing block 2
+--------Free List--------
+ | bno:7 | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 0 acquired block 2 for READ
+This Buffer has the status as 260. It is not on the free list and is assigned to 2 disk block which is procured by 0 process.
+--------Free List--------
+ | bno:7 | 
+--------Buffer List 0--------
+ | bno:2 pid:0 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:1 | 
+
+Process 1 releasing block 1
+--------Free List--------
+ | bno:7 | bno:1 | 
+--------Buffer List 0--------
+ | bno:2 pid:0 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:-1 | 
+
+Process 0 releasing block 2
+--------Free List--------
+ | bno:7 | bno:1 | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:1 pid:-1 | 
+
+Process 0 acquired block 0 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 0 disk block which is procured by 0 process.
+--------Free List--------
+ | bno:2 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | bno:0 pid:0 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | 
+
+Process 0 releasing block 0
+--------Free List--------
+ | bno:2 | bno:-1 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:2 | bno:0 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | 
+
+Process 2 releasing block 6
+--------Free List--------
+ | bno:-1 | bno:6 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:6 pid:-1 | bno:0 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | 
+
+Process 2 acquired block 9 for WRITE_DELAYED
+This Buffer has the status as 026. It is not on the free list and is assigned to 9 disk block which is procured by 2 process.
+--------Free List--------
+ | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:0 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:9 pid:2 | 
+
+Process Kernel releasing block 7
+--------Free List--------
+ | bno:7 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:0 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:9 pid:2 | 
+
+Process 2 releasing block 9
+--------Free List--------
+ | bno:7 | bno:9 | 
+--------Buffer List 0--------
+ | bno:2 pid:-1 | bno:0 pid:-1 | 
+--------Buffer List 1--------
+ | bno:7 pid:-1 | bno:9 pid:-1 | 
+
+Finishing
