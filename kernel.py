@@ -42,6 +42,7 @@ def requests_manager():
             block, delayed_write = get_block(buf_cache, req.block_number, req.process_id)
 
         if delayed_write is True:
+            
             #sleep for asynchronous write to disk   
             delay_thread = threading.Thread(target=delay_func, args = (block,))
             delay_thread.start()
@@ -80,9 +81,11 @@ def requests_manager():
 
 def delay_func(block1):
     
+    #handles asynchronous write
     time_to_sleep = random.randint(1,3)
     time.sleep(time_to_sleep)
     
+    #releasing the buffer after asynchronous write
     release_queue.put(ReleaseRequest(process_id="Kernel",
                                       block=block1))
 
@@ -187,9 +190,9 @@ worker_threads = []
 
 
 for i in range(Config.data("NUMBER_OF_PROCESSES")):
-    t = threading.Thread(target=worker, args=[i])
-    worker_threads.append(t)
-    t.start()
+    process = threading.Thread(target=worker, args=[i])
+    worker_threads.append(process)
+    process.start()
 
 ########################Threads Termination######################
         

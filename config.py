@@ -20,11 +20,10 @@ class Config:
             'BUSY': '0',
             'FREE': '1',
             'VALID': '2',
-            'DELAYED_WRITE': '3',
-            'ACCESSING_DISK': '4',
-            'PROCESS_WAITING': '5',
-            'OLD':'6',
-            'NOT_OLD':'7'
+            'ACCESSING_DISK': '3',
+            'PROCESS_WAITING': '4',
+            'OLD':'5',
+            'NOT_OLD':'6'
         },
         "REQUEST_TYPE": [
             "READ",

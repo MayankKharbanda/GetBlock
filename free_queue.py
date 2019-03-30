@@ -2,8 +2,6 @@ class FreeQueue():
     
     def __init__(self, head=None, tail=None):
         
-        #initialize empty list
-        
         self.head = head
         self.tail = tail
    
@@ -38,8 +36,7 @@ class FreeQueue():
     
     def remove(self, current_node):
         
-        #Removing buffer from free list
-        
+        #Removes buffer from free list
         
         #updating head/tail if needed
         if self.head == current_node:
@@ -62,8 +59,7 @@ class FreeQueue():
     
     def remove_from_head(self):
         
-        #Removing buffer from head
-        
+        #Removes buffer from head
         
         current_node = self.head
         self.tail = None if self.tail == current_node else self.tail
@@ -75,10 +71,16 @@ class FreeQueue():
         
     def show(self):
         
+        #returns the state of a hash queue
+        
         current_node = self.head
+        
         print_string = ' | ' 
         while current_node is not None:
+            
             print_string += 'bno:' + str(current_node.block_number or -1)
             print_string += ' | '
+            
             current_node = current_node.next_free_list
+        
         return print_string

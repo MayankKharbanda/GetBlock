@@ -1,8 +1,7 @@
 class HashQueue():
     
+    
     def __init__(self, head=None, tail=None):
-        
-        #initialize empty list
          
         self.head = head
         self.tail = tail
@@ -10,6 +9,7 @@ class HashQueue():
     
     def add(self, new_node):
         
+        #adds a buffer into the buffer queue
         if self.head is None:
             self.head = self.tail = new_node
         
@@ -22,7 +22,7 @@ class HashQueue():
     
     def remove(self, current_node):
 
-        #Removing buffer from a particular buffer list
+        #Removes buffer from a particular buffer list
         
         # updating head/tail if needed
         if self.head == current_node:
@@ -42,12 +42,17 @@ class HashQueue():
 
     def show(self):
         
+        #returns the state of a hash queue
         current_node = self.head
+        
         print_string = ' | '
 
         while current_node is not None:
+            
             s = (f'bno:{current_node.block_number} '
                  f'pid:{current_node.process_id}')
             print_string += s + ' | '
+            
             current_node = current_node.next_hash_queue
+        
         return print_string
