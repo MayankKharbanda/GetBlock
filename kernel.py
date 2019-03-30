@@ -42,6 +42,7 @@ def requests_manager():
             block, delayed_write = get_block(buf_cache, req.block_number, req.process_id)
 
         if delayed_write is True:
+            
             #sleep for asynchronous write to disk   
             delay_thread = threading.Thread(target=delay_func, args = (block,))
             delay_thread.start()
@@ -69,7 +70,8 @@ def requests_manager():
                     block.set_status('NOT_OLD')
 
             print_queue.put(block)
-            
+            print_queue.put(buf_cache.show())
+
             # put locked buffer in the queue to be accessed by the process
             req.return_queue.put(block)
         
@@ -79,9 +81,11 @@ def requests_manager():
 
 def delay_func(block1):
     
+    #handles asynchronous write
     time_to_sleep = random.randint(1,3)
     time.sleep(time_to_sleep)
     
+    #releasing the buffer after asynchronous write
     release_queue.put(ReleaseRequest(process_id="Kernel",
                                       block=block1))
 
@@ -107,10 +111,12 @@ def release_manager():
         
         with buf_cache_lock:    #locking the buffer cache
             b_release(buf_cache, req.block)
-            
+             
             s = (f'Process {req.process_id} '
                  f'releasing block {req.block.block_number}')
             print_queue.put(s)
+
+            print_queue.put(buf_cache.show())
         
         release_queue.task_done()
 
@@ -141,7 +147,7 @@ del release_thread
 
 def worker(process_id):
     
-    random_requests = random.randint(1,10)
+    random_requests = random.randint(1,4)
     for ith_request in range(random_requests):
         #Requesting random block with access type of read, write and delayed write
         random_block = random.randint(0, Config.data('MAX_BLOCKS')-1)
@@ -176,7 +182,7 @@ def worker(process_id):
 buf_cache = BufferCache()
 buf_cache_lock = threading.Lock()
 print_queue.put('Starting up!')
-
+print_queue.put(buf_cache.show())
 
 #########################Process Threads Config##################
 
@@ -184,9 +190,9 @@ worker_threads = []
 
 
 for i in range(Config.data("NUMBER_OF_PROCESSES")):
-    t = threading.Thread(target=worker, args=[i])
-    worker_threads.append(t)
-    t.start()
+    process = threading.Thread(target=worker, args=[i])
+    worker_threads.append(process)
+    process.start()
 
 ########################Threads Termination######################
         

@@ -30,7 +30,7 @@ class BufferHeader:
     
     def __str__(self):
         
-        #for describing the details of a buffer
+        #describes the details of a buffer
         
         if(self.next_free_list is None and self.prev_free_list is None):
             on_free_list = 'not on the free list'

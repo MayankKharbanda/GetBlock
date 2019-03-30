@@ -12,19 +12,18 @@ class Config:
     __conf = {
         "BUFFER_SIZE": 1024,
         "BLOCK_SIZE": 1024,
-        "MAX_BLOCKS": 50,
-        "MAX_BUFFERS": 8,
-        "MAX_QUEUES": 4,
-        "NUMBER_OF_PROCESSES": 10,
+        "MAX_BLOCKS": 10,
+        "MAX_BUFFERS": 4,
+        "MAX_QUEUES": 2,
+        "NUMBER_OF_PROCESSES": 5,
         "BUFFER_STATUS": {
             'BUSY': '0',
             'FREE': '1',
             'VALID': '2',
-            'DELAYED_WRITE': '3',
-            'ACCESSING_DISK': '4',
-            'PROCESS_WAITING': '5',
-            'OLD':'6',
-            'NOT_OLD':'7'
+            'ACCESSING_DISK': '3',
+            'PROCESS_WAITING': '4',
+            'OLD':'5',
+            'NOT_OLD':'6'
         },
         "REQUEST_TYPE": [
             "READ",

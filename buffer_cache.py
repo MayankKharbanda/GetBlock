@@ -9,7 +9,6 @@ from config import Config
 class BufferCache:
     
     
-    
     def __init__(self):
         
         
@@ -53,10 +52,7 @@ class BufferCache:
     
     def in_hash_queue(self, block_num):
         
-        
-        '''
-        It checks if the block is in hash queue or not
-        '''
+        #It checks if the block is in hash queue or not
         
         hash_block = self.hash_queue_headers[int(block_num) % Config.data("MAX_QUEUES")].head
         
@@ -66,3 +62,15 @@ class BufferCache:
             hash_block = hash_block.next_hash_queue
         
         return False
+
+    def show(self):
+        
+        #returns the state of buffer cache
+        print_string = '--------Free List--------\n'
+        print_string += self.free_list.show() + '\n'
+        
+        for i, hq in enumerate(self.hash_queue_headers):
+            print_string += f'--------Buffer List {i}--------\n'
+            print_string += hq.show() + '\n'
+        
+        return print_string
