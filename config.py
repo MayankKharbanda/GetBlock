@@ -25,6 +25,12 @@ class Config:
             'OLD':'5',
             'NOT_OLD':'6'
         },
+        "FLAG": {
+            'NONE':'0',
+            'DELAYED_WRITE':'1',
+            'BLOCK_BUSY':'2',
+            'FREE_LIST_EMPTY':'3'
+        },
         "REQUEST_TYPE": [
             "READ",
             "WRITE",
