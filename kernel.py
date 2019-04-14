@@ -159,7 +159,9 @@ del release_thread
 ###################### Processes Threads #############################
 
 def worker(process_id):
-    
+
+    print_queue.put(f'Process {process_id} started.') 
+
     random_requests = random.randint(1,4)
     for ith_request in range(random_requests):
         #Requesting random block with access type of read, write and delayed write
@@ -171,26 +173,43 @@ def worker(process_id):
         return_val = Reply()
     
         
+        s =  (f'Process {process_id} '
+              f'requesting block {random_block} '
+              f'for {request_type}')
+        print_queue.put(s)
+
         while return_val.block is None:       #until buffer is not found
+
             request_queue.put(Request(process_id=process_id,
                                   block_number=random_block,
                                   request_type=request_type,
                                   return_queue=return_queue))
         
             return_val = return_queue.get()
+
             
             #sleep the process until buffer becomes free
             if FLAG_STATUS['BLOCK_BUSY'] in return_val.event:
+                print_queue.put(f'Process {process_id} going to sleep because requested buffer is locked.')
                 block_free[random_block].wait()
+                print_queue.put(f'Process {process_id} wakes up.')
             elif FLAG_STATUS['FREE_LIST_EMPTY'] in return_val.event:
+                print_queue.put(f'Process {process_id} going to sleep because free list is empty.')
                 any_block_free.wait()
+                print_queue.put(f'Process {process_id} wakes up.')
             
             return_queue.task_done()
 
-    
-        time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
-    
-            #requesting to release the buffer
+        working_time = random.randint(0,3) 
+        print_queue.put(f'Process {process_id} going to sleep for {working_time} seconds')
+        time.sleep(working_time)     #sleep to represent process is working over the buffer
+   
+        s =  (f'Process {process_id} putting a release request '
+              f'for block {random_block} '
+              f'for {request_type}')
+        print_queue.put(s)
+
+        #requesting to release the buffer
         release_queue.put(ReleaseRequest(process_id=process_id,
                                       block=return_val.block))
     
