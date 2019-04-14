@@ -133,6 +133,21 @@ These requests are defined in the Config file.
 <hr>
 &nbsp;&nbsp;
 
+### Type of flags sent from get_block
+
+These flags are defined in the Config file.
+
+| Flag Symbol (String) | Flag Name | Flag Meaning |
+| :---: | --- | --- |
+| 0 | NONE            | Flag is null |
+| 1 | DELAYED_WRITE   | The block in the free list has status delayed write |
+| 2 | BLOCK_BUSY      | The block process want to access is busy |
+| 3 | FREE_LIST_EMPTY | Free list is Empty |
+
+&nbsp;&nbsp;
+<hr>
+&nbsp;&nbsp;
+
 ### HashQueue
 
 | Variable | Type | Definition |
@@ -207,8 +222,9 @@ This function implements the system call *brelease*
 
 | Class | Definition |
 | :---: | --- |
-| Request | To create objects for get_block requests |
-| ReleaseRequest | To create objects for get_block requests |
+| Request        | To create objects for get_block requests |
+| ReleaseRequest | To create objects for brelease requests |
+| Reply          | To create objects for reply from request manager |
 
 #### Class-Request
 | Variable | Type | Definition |
@@ -226,19 +242,27 @@ This function implements the system call *brelease*
 | block      | BufferHeader | The block which is to be released |
 
 
+#### Class-Reply
+| Variable | Type | Definition |
+| :---: | :---: | --- | 
+| block | BufferHeader | Address of locked buffer |
+| event | String       | Flag message if the buffer lock is not attained |
+
+
 &nbsp;&nbsp;
 <hr>
 &nbsp;&nbsp;
 
 
 ### kernel
-It is the backbone of the module. It is divided into three broad categories.
+It is the backbone of the module. It is divided into four broad categories.
 
 | Category | Definition |
 | :---: | --- |
 | Queues          | So that at a moment only one process can access the resource |
 | Daemon Threads  | Threads which runs till the life of the kernel and acts as a resource allocator |
 | Process Threads | Threads which acts like a process and asks for blocks time to time |
+| Thread Events   | Events to control sleep and wakeup of the threads, when some block is busy/free |
 
 
 + **Queues**  
@@ -247,7 +271,7 @@ It is the backbone of the module. It is divided into three broad categories.
 | :---: | --- |
 | request_queue | This queue contains get_block requests |
 | print_queue   | This queue contains print requests |
-|release_queue  | This queue contains brelease requests |
+| release_queue  | This queue contains brelease requests |
 
 
 +  **Daemon Threads**  
@@ -263,6 +287,13 @@ It is the backbone of the module. It is divided into three broad categories.
 | Name | Function | Definition |
 | :---: | --- | --- |
 | Process | worker | This thread acts as an arbitrary process |
+
++ **Thread Events**  
+
+| Name | Definition |
+| :---: | --- |
+| any_block_free | This event is used for processes waiting for any buffer to become free |
+| block_free[i]  | This event is used for processes waiting for **ith** buffer to become free |
 
 + **delay_func is a function used to manage asynchronous write.**
 &nbsp;&nbsp;

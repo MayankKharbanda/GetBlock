@@ -24,3 +24,13 @@ class ReleaseRequest:
 
         self.process_id = process_id
         self.block = block
+
+class Reply:
+    
+    #This class is used to create objects for reply from request manager
+    
+    def __init__(self,
+                 block = None,
+                 event = 0):
+        self.block = block
+        self.event = event

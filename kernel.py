@@ -8,9 +8,11 @@ from get_block import get_block
 from brelease import b_release
 from request import Request
 from request import ReleaseRequest
+from request import Reply
 from config import Config
 
 BUFFER_STATUS = Config.data('BUFFER_STATUS')
+FLAG_STATUS = Config.data("FLAG")
 
 ############# Daemon Threads Definations##############
 
@@ -36,22 +38,27 @@ def requests_manager():
     while True:
         
         req = request_queue.get()
-        delayed_write = False
+        flag = FLAG_STATUS['NONE']
+        
         #locking buffer cache to run get block
         with buf_cache_lock:
-            block, delayed_write = get_block(buf_cache, req.block_number, req.process_id)
+            block_free[req.block_number].clear()    #sleep other processes waiting for this block
+            block, flag = get_block(buf_cache, req.block_number, req.process_id)
 
-        if delayed_write is True:
+        if FLAG_STATUS['DELAYED_WRITE'] in flag:
             
             #sleep for asynchronous write to disk   
             delay_thread = threading.Thread(target=delay_func, args = (block,))
             delay_thread.start()
-            req.return_queue.put(None)
+            req.return_queue.put(Reply(None, flag))
             
-        elif block is None:   #didn't recieved the buffer in first go
+        elif FLAG_STATUS['BLOCK_BUSY'] in flag:   #didn't recieved the buffer in first go
             
-            req.return_queue.put(None)
+            req.return_queue.put(Reply(None, flag))
         
+        elif FLAG_STATUS['FREE_LIST_EMPTY'] in flag:   #didn't recieved the buffer in first go
+            any_block_free.clear()      #sleep the process waiting for any block to free
+            req.return_queue.put(Reply(None, flag))
             
         else:
             
@@ -73,7 +80,7 @@ def requests_manager():
             print_queue.put(buf_cache.show())
 
             # put locked buffer in the queue to be accessed by the process
-            req.return_queue.put(block)
+            req.return_queue.put(Reply(block, flag))
         
         request_queue.task_done() #task for iteration is done -used while working with thread-queues
 
@@ -108,10 +115,16 @@ def release_manager():
     
     while True:
         req = release_queue.get()
+        block_num = req.block.block_number
         
         with buf_cache_lock:    #locking the buffer cache
             b_release(buf_cache, req.block)
-             
+            
+            #wake up the sleeping process
+            block_free[block_num].set()
+            any_block_free.set()
+            
+            
             s = (f'Process {req.process_id} '
                  f'releasing block {req.block.block_number}')
             print_queue.put(s)
@@ -146,7 +159,9 @@ del release_thread
 ###################### Processes Threads #############################
 
 def worker(process_id):
-    
+
+    print_queue.put(f'Process {process_id} started.') 
+
     random_requests = random.randint(1,4)
     for ith_request in range(random_requests):
         #Requesting random block with access type of read, write and delayed write
@@ -155,24 +170,48 @@ def worker(process_id):
         
         
         return_queue = queue.Queue()    #for exchange of block number from request_manager and the process
-        return_val = None
+        return_val = Reply()
     
-    
-        while return_val is None:       #until buffer is not found
+        
+        s =  (f'Process {process_id} '
+              f'requesting block {random_block} '
+              f'for {request_type}')
+        print_queue.put(s)
+
+        while return_val.block is None:       #until buffer is not found
+
             request_queue.put(Request(process_id=process_id,
                                   block_number=random_block,
                                   request_type=request_type,
                                   return_queue=return_queue))
         
             return_val = return_queue.get()
+
+            
+            #sleep the process until buffer becomes free
+            if FLAG_STATUS['BLOCK_BUSY'] in return_val.event:
+                print_queue.put(f'Process {process_id} going to sleep because requested buffer is locked.')
+                block_free[random_block].wait()
+                print_queue.put(f'Process {process_id} wakes up.')
+            elif FLAG_STATUS['FREE_LIST_EMPTY'] in return_val.event:
+                print_queue.put(f'Process {process_id} going to sleep because free list is empty.')
+                any_block_free.wait()
+                print_queue.put(f'Process {process_id} wakes up.')
+            
             return_queue.task_done()
 
-    
-        time.sleep(random.randint(0,3))     #sleep to represent process is working over the buffer
-    
-            #requesting to release the buffer
+        working_time = random.randint(0,3) 
+        print_queue.put(f'Process {process_id} going to sleep for {working_time} seconds')
+        time.sleep(working_time)     #sleep to represent process is working over the buffer
+   
+        s =  (f'Process {process_id} putting a release request '
+              f'for block {random_block} '
+              f'for {request_type}')
+        print_queue.put(s)
+
+        #requesting to release the buffer
         release_queue.put(ReleaseRequest(process_id=process_id,
-                                      block=return_val))
+                                      block=return_val.block))
     
     
   
@@ -183,6 +222,13 @@ buf_cache = BufferCache()
 buf_cache_lock = threading.Lock()
 print_queue.put('Starting up!')
 print_queue.put(buf_cache.show())
+
+#########################Events##################################
+
+any_block_free = threading.Event()
+block_free = []
+for i in range(Config.data("MAX_BLOCKS")):
+    block_free.append(threading.Event())
 
 #########################Process Threads Config##################
 
